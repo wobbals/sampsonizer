@@ -19,14 +19,14 @@ mkdir build && cd build && cmake .. && make
 
 ### Example:
 
-`sampsonizer -n 10 input.mp4 out%04d.png`
+`sampsonizer -n 10 -i /tmp/BigBuckBunny.mp4 /tmp/frame%04d.png`
 
 # Notes & errata for reviewer
 
 ## alternative approximate solution
 
-Depending on the interpretation of the problem statement, much of this problem
-could be implemented with a `one-liner` gstreamer pipeline, for example:
+Depending on the interpretation of the original problem statement, much of this
+problem could be implemented in a `one-liner` gstreamer pipeline, for example:
 
 ```
 # -n 10 ~/Downloads/BigBuckBunny.mp4 frame%d.png
@@ -39,11 +39,11 @@ gst-launch-1.0 filesrc location=~/Downloads/BigBuckBunny.mp4 \
 
 The only thing missing from this approach (that I noticed anyway) is that
 in cases where the output rate is significantly lower than the keyframe rate
-of the source bitstream, keyframes that do not need decoding are nonetheless
-decoded before being dropped by the videorate element. I had considered
-extending `identity` with a rate parameter, or even writing a fresh gstreamer
-plugin to cover this quirk, but the whole exercise began to feel a bit detached
-from the spirit of the original problem statement.
+of the source bitstream. Here, keyframes that do not need decoding are
+nonetheless decoded before being dropped by the videorate element.
+I had considered extending `identity` with a rate parameter, or even writing a
+new gstreamer plugin to cover this quirk, but the approach began to feel
+a bit detached from the spirit of the original problem statement.
 
 There's plenty of great discussion to be had about the trade-offs between
 modular/reusable and bespoke solutions to problems like these.
@@ -66,8 +66,16 @@ the time of writing.
 
 ## Error handling and logging
 
-Most of the effort in maintaining tools like these is not in the "happy path",
-but rather the graceful handling of errors and introducing tools to aid
-debuggers while not drowning stdout/stderr in messages that the cilent may not
-find so helpful. This example introduces no such facility, but I find this to
-often be an interesting topic for further consideration.
+Most of the effort in maintaining tools like these is not so much in writing
+code to implement the "happy path", but rather the graceful handling of errors
+and tools to make the tool more robust and client lives easier. Here, we fall
+short in a few ways that could be interesting to discuss or expand upon:
+
+* Adding tools to redirect/capture/configure logging output so as to prevent
+drowning clients in stdout/stderr messages that are only useful to a debugger
+of this library.
+* Testing against a variety of input files, formats, intervals (both thumbnail
+rate and GOP length).
+* Expanding to support multiple output formats
+* Graceful handling of errors. This tool takes a somewhat brutalist approach to
+managing the errors and retcodes that arise from calls in to ffmpeg libraries.
