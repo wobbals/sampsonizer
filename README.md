@@ -1,4 +1,4 @@
-_I do bite my thumbnail, sir._
+_I do bite my thumb[nail], sir._
 
 ## Requirements
 
@@ -26,7 +26,7 @@ mkdir build && cd build && cmake .. && make
 ## alternative approximate solution
 
 Depending on the interpretation of the original problem statement, much of this
-problem could be implemented in a `one-liner` gstreamer pipeline, for example:
+problem could be implemented in a "one-liner" gstreamer pipeline, for example:
 
 ```
 # -n 10 ~/Downloads/BigBuckBunny.mp4 frame%d.png
