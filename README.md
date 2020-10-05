@@ -21,11 +21,14 @@ mkdir build && cd build && cmake .. && make
 
 `sampsonizer -n 10 -i /tmp/BigBuckBunny.mp4 /tmp/frame%04d.png`
 
-# Notes & errata for reviewer
+# Notes, errata, and editorial for reviewers
 
 ## alternative approximate solution
 
-Depending on the interpretation of the original problem statement, much of this
+Before I dive in to a code solution to this prompt, it's worth stepping back
+to look at what's being asked:
+
+Depending on interpretation of the original problem statement, much of this
 problem could be implemented in a "one-liner" gstreamer pipeline, for example:
 
 ```
@@ -37,25 +40,25 @@ gst-launch-1.0 filesrc location=~/Downloads/BigBuckBunny.mp4 \
 
 ```
 
-The only thing missing from this approach (that I noticed anyway) is that
-in cases where the output rate is significantly lower than the keyframe rate
-of the source bitstream. Here, keyframes that do not need decoding are
-nonetheless decoded before being dropped by the videorate element.
-I had considered extending `identity` with a rate parameter, or even writing a
-new gstreamer plugin to cover this quirk, but the approach began to feel
-a bit detached from the spirit of the original problem statement.
+The only thing missing from this approach (that I noticed anyway) is an
+inefficiency in cases where the output rate is significantly lower than the
+keyframe rate of the source bitstream. Here, keyframes that do not need
+decoding are nonetheless decoded before being dropped by the videorate element.
+I had considered addressing this quirk as patches or new gstreamer elements,
+but the approach began to feel a bit detached from the spirit of the original
+problem statement, which calls specifically for a command line tool.
 
 There's plenty of great discussion to be had about the trade-offs between
 modular/reusable and bespoke solutions to problems like these.
-I chose to interpret this prompt as a _programming_ sample, rather than a
-_solution_ demonstration, and would welcome the bigger picture discussion as
+I chose to interpret this prompt as a request for a _programming_ sample,
+rather than a _solution_ demonstration, and would welcome that discussion as
 follow-up to the reviewer.
 
 Thus, I present sampsonizer, the sparse bitstream sampler.
 
 ## Style
 
-I find ffmpegs C libraries pleasant to work with, but force me to adopt a code
+I find ffmpeg's C libraries pleasant to work with, but force me to adopt a code
 style that I don't typically use. As such, there may be some lines of code that
 seem a bit inconsistent.
 
@@ -79,3 +82,6 @@ rate and GOP length).
 * Expanding to support multiple output formats
 * Graceful handling of errors. This tool takes a somewhat brutalist approach to
 managing the errors and retcodes that arise from calls in to ffmpeg libraries.
+* Complete the various `_free` implementations. These fell short as I ran out of
+time to work on this problem. In a situation where the main function exit is an
+exited process, this seemed like an acceptable sacrifice.

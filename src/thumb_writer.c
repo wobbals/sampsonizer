@@ -110,7 +110,6 @@ static AVFrame* create_rgb_frame(struct thumb_writer* writer, AVFrame* src) {
   dst->format = writer->codec_ctx->pix_fmt;
   dst->width = src->width;
   dst->height = src->height;
-  // detach data buffers from src and dest
   ret = av_frame_get_buffer(dst, 0);
   ret = sws_scale(writer->sws_ctx,
                   (const uint8_t* const*)src->data,

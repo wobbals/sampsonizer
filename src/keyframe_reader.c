@@ -92,6 +92,9 @@ void keyframe_reader_free(struct keyframe_reader* reader)
     avformat_free_context(reader->format_ctx);
     reader->format_ctx = NULL;
   }
+  if (reader->codec_ctx) {
+    avcodec_free_context(&reader->codec_ctx);
+  }
   free(reader);
 }
 

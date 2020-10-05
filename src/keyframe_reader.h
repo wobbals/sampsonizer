@@ -11,8 +11,9 @@
 #include <libavformat/avformat.h>
 #include <libavutil/frame.h>
 
-// Simple wrapper around an input file. Reads only packets of the first video
-// stream parsed in the input container, marked as keyframes.
+// Simple wrapper around an input file. Emits only frames of the first video
+// stream parsed in the input container, marked as keyframes, at the specified
+// keyframe_interal passed in config.
 struct keyframe_reader;
 
 struct keyframe_reader_config {
@@ -32,6 +33,7 @@ int keyframe_reader_open(struct keyframe_reader** reader,
 void keyframe_reader_free(struct keyframe_reader* reader);
 
 /*
+ Fetches the next eligible frame for the instance.
  @return 0 on success, and any error that can be returned by
  av_read_frame, avcodec_receive_frame, or avcodec_send_packet.
  */
